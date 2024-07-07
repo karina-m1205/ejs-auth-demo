@@ -1,0 +1,16 @@
+.block{
+width: 300px;
+margin: auto;
+}
+
+#registerForm {
+position: relative;
+}
+
+.registerUnit{
+    padding: 5px;
+}
+
+.loginUnit{
+    padding: 10px;
+}
