@@ -9,6 +9,7 @@ const userRouter = require("./routers/userRouter");
 const path = require('path');
 const protectionModule = require("./modules/protectionModule");
 const multer = require('multer');
+const fs = require("fs");
 
 
 
@@ -24,16 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 // add user's login and password in users.json
 app.use("/api/registration", registrationRouter);
 app.get("/registration", (req, res) => {
-    res.render("register");
+  res.render("register");
 });
 // generate token
 app.use("/api/login", loginRouter);
 app.get("/login", (req, res) => {
-    res.render("login");
+  res.render("login");
 });
 // get user's data
 app.use("/api/user", protectionModule, (req, res) => {
-    res.redirect("/user");
+  res.redirect("/user");
 });
 app.use("/user", userRouter);
 
@@ -57,18 +58,19 @@ const upload = multer({
   },
 });
 app.use("/api/upload", upload.single("img"));
-app.post("/api/upload", (req, res) => {
-    // console.log(req);
-    const img = req.file;
-    console.log(img);
-    res.status(201).json({ message: "Data received successfully" });
+app.post("/api/upload", protectionModule, (req, res) => {
+  const usersBuf = fs.readFileSync("users.json", "utf-8");
+  const users = JSON.parse(usersBuf);
+
+  const findUser = users.find(user => user.email === req.user.email);
+  const img = req.file;
+  findUser.images.push(img.filename);   
+  fs.writeFileSync("users.json",  JSON.stringify(users, null, 2));
+      
+  res.status(201).json({ message: "Data received successfully" });
 })
 
 
-
-
-
-
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });

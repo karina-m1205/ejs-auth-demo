@@ -21,6 +21,8 @@ btn.addEventListener("click", (e) => {
         headers: {
             "Accept": "application/json",
             // "Content-Type": "multipart/form-data",
+            authorization: `Bearer ${localStorage.getItem('token')}`,
+            
         },
         body: formData,
     })

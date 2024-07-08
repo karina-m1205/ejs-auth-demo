@@ -7,7 +7,7 @@ registrationRouter.post("/", (req, res) => {
     const usersBuf = fs.readFileSync("users.json", "utf-8");
     const users = JSON.parse(usersBuf);
     const userItem = req.body;
-    userItem.image = [];
+    userItem.images = [];
 
     if (userItem.username === "" || userItem.email === "" || userItem.password === "") {
         return res.status(401).json({ message: "enter all data" });
