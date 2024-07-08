@@ -8,9 +8,9 @@ const registrationRouter = require("./routers/registrationRouter");
 const userRouter = require("./routers/userRouter");
 const path = require('path');
 const protectionModule = require("./modules/protectionModule");
-
 const multer = require('multer');
-const upload = multer({ dest: path.join(__dirname, 'public/upload') });
+
+
 
 app.set('view engine', 'ejs');
 app.set(path.join(__dirname, 'views'));
@@ -38,11 +38,29 @@ app.use("/api/user", protectionModule, (req, res) => {
 app.use("/user", userRouter);
 
 //upload img to server
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'public/upload'));
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === '/jpg') {
+      return cb(null, true);
+    }
+    cb(new Error('File must be image'), false);
+  },
+});
 app.use("/api/upload", upload.single("img"));
 app.post("/api/upload", (req, res) => {
     // console.log(req);
-    // const img = req.file;
-    // console.log(img);
+    const img = req.file;
+    console.log(img);
     res.status(201).json({ message: "Data received successfully" });
 })
 
